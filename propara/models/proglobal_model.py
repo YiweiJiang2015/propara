@@ -74,6 +74,7 @@ class ProGlobal(Model):
 
         # linear function for before location start
         span_start_before_input_dim = modeling_dim
+        # todo TimeDistributed needs more nerves
         self._span_start_predictor_before = TimeDistributed(torch.nn.Linear(span_start_before_input_dim, 1))
 
         # linear function for before location end

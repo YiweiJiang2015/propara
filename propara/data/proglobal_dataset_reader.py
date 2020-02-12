@@ -11,7 +11,7 @@ from allennlp.data.token_indexers import TokenIndexer, SingleIdTokenIndexer
 from allennlp.data.fields import TextField, IndexField, LabelField, ListField, SequenceLabelField
 from allennlp.data.tokenizers.word_splitter import JustSpacesWordSplitter
 
-category_list = [0, 1, 2]
+category_list = [0, 1, 2] # why?
 category_mask_list = [0, 1]
 
 
@@ -73,6 +73,7 @@ class ProGlobalDatasetReader(DatasetReader):
                 part_mask_list = []  # list of participant mask, 0 0 1 1 0 0, to obtain the part embeddings
                 before_category_status_list = []  # list of bef category annotations   0-known, 1-unknown, 2-null
                 before_category_mask_list = []  # list of bef category masks, 0-unknown   1-known
+
                 before_loc_start_list = []  # list of start positions of bef loc
                 before_loc_end_list = []  # list of end positions of bef loc
                 after_category_status_list = []  # list of aft category annotations   0-known, 1-unknown, 2-null
