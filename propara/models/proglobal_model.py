@@ -203,7 +203,7 @@ class ProGlobal(Model):
             # max-pooling output for three category classification
             category_input, category_input_indices = torch.max(encoded_paragraph, 1)
 
-            modeling_dim = encoded_paragraph.size(-1)
+            modeling_dim = encoded_paragraph.size(-1) # 2 * hidden_size, used in span prediction
             span_start_input = encoded_paragraph
 
             # predict the initial before location state

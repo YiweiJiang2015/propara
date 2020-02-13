@@ -35,6 +35,4 @@ sys.argv = [
 ]
 
 main()
-#if __name__ == "__main__":
-    #predictor_overrides = {'ProGlobal': 'ProGlobalPrediction'}
-    #main(prog="python -m allennlp.run")#, predictor_overrides=predictor_overrides)
+
