@@ -191,7 +191,7 @@ class ProGlobal(Model):
         for index in range(list_size):
             # get one slice of step for prediction
             embedding_paragraph_slice = embedding_paragraph[:, index, :, :].squeeze(1)
-            para_mask_slice = para_mask[:, index, :].squeeze(1)
+            para_mask_slice = para_mask[:, index, :]#.squeeze(1)
             para_lstm_mask_slice = para_mask_slice if self._mask_lstms else None
             para_index_mask_slice = para_index_mask[:, index]
             after_category_mask_slice = after_category_mask_list[:, index, :].squeeze()
@@ -336,7 +336,8 @@ class ProGlobal(Model):
             # compute the loss for location start/end prediction
             after_loc_start_pred = util.masked_softmax(span_start_logits_after, para_mask_slice)
             logpy_after_start = torch.gather(after_loc_start_pred, 1, after_loc_start_slice).view(-1)
-            loss += -(logpy_after_start * after_category_mask).mean()
+            # logpy_after_start (bsz)
+            loss += -(logpy_after_start * after_category_mask).mean() # todo CHEATING?!
             after_loc_end_pred = util.masked_softmax(span_end_logits_after, para_mask_slice)
             logpy_after_end = torch.gather(after_loc_end_pred, 1, after_loc_end_slice).view(-1)
             loss += -(logpy_after_end * after_category_mask).mean()
