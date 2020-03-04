@@ -4,20 +4,20 @@ import sys
 import json, shutil
 
 from allennlp.commands import main
-from models.proglobal_model import ProGlobal
-from data.proglobal_dataset_reader import ProGlobalDatasetReader
-from service.predictors.proglobal_prediction import ProGlobalPredictor
+from models.prolocal_model import ProLocalModel
+from data.prolocal_dataset_reader import ProLocalDatasetReader
+from service.predictors.prolocal_prediction import ProLocalPredictor
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(os.path.join(__file__, os.pardir))))
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s - %(message)s',
                     level=logging.INFO)
 
-config_file = "../data/naacl18/proglobal/proglobal_params.json"
+config_file = "../data/naacl18/prolocal/prolocal_params.json"
 
 # Use overrides to train on CPU.
 overrides = json.dumps({"trainer": {"cuda_device": 0}})
 
-serialization_dir = "tmp/proglobal"
+serialization_dir = "../data/naacl18/prolocal/output1"
 
 # Training will fail if the serialization directory already
 # has stuff in it. If you are running the same training loop

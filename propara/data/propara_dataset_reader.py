@@ -1,5 +1,5 @@
-from allennlp.common import tqdm
-tqdm._tqdm.monitor_interval = 0
+#from allennlp.common import tqdm
+#tqdm._tqdm.monitor_interval = 80
 
 from typing import Dict, List, Tuple, Iterator
 import collections

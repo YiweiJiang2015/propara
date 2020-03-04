@@ -90,15 +90,15 @@ def preprocess_question_label(sid, participant, event_type, from_location, to_lo
 '''
   Read the gold file containing all records where an entity undergoes some state-change: create/destroy/move.
 '''
-def readLabels(fnLab, selPid=None, gold_labels=None):
-    fLab = open(fnLab)
-    fLab.readline()    # skip header
+def readLabels(full_label_file, set_Para_id=None, location_labels=None):
+    full_Label = open(full_label_file)
+    full_Label.readline()    # skip header
     ret = {}
     TurkerLabels = []
-    for ln in fLab:
+    for ln in full_Label:
         f = ln.rstrip().split('\t')
         if len(f) == 0 or len(f) == 1:
-            if not selPid or pid in selPid:
+            if not set_Para_id or pid in set_Para_id:
                 if pid not in ret:
                     ret[pid] = []
                 ret[pid].append(TurkerLabels)
@@ -110,9 +110,9 @@ def readLabels(fnLab, selPid=None, gold_labels=None):
             if f[1] == '?': continue
             pid, sid, participant, event_type, from_location, to_location = int(f[0]), int(f[1]), f[3], f[4], f[5], f[6]
 
-            if gold_labels and selPid and pid in selPid:
+            if location_labels and set_Para_id and pid in set_Para_id:
                 #print("pid=", pid)
-                TurkerLabels += preprocess_question_label(sid, participant, event_type, from_location, to_location, gold_labels[pid].keys())
+                TurkerLabels += preprocess_question_label(sid, participant, event_type, from_location, to_location, location_labels[pid].keys())
             else:
                 TurkerLabels += preprocess_question_label(sid, participant, event_type, from_location, to_location)
 
@@ -142,9 +142,13 @@ def readPredictions(fnPred):
 #----------------------------------------------------------------------------------------------------------------
 
 def readGold(fn):
-    # read the gold label
+    """
+    Read location labels without status description (move, created, destroyed)
+    :param fn:
+    :return:
+    """
 
-    dtPar = {}
+    labels_Para = {} # dcit of labels sorted by paragraph id
     for ln in open(fn):
         f = ln.rstrip().split('\t')
         parId, sentId, participant, before_after, labels = int(f[0]), int(f[1]), f[2], f[3], f[4:]
@@ -154,20 +158,21 @@ def readGold(fn):
             sys.exit(-1)
 
         if sentId == 1 and before_after == "before":
-            statusId = 0
+            statusId = 0 # before_location matters only in the first step
         elif before_after == "before":
             continue  # skip this line
         else:
             statusId = sentId
 
-        if parId not in dtPar:
-            dtPar[parId] = {}
-        dtPartLab = dtPar[parId]
-        if participant not in dtPartLab:
-            dtPartLab[participant] = {statusId: labels}
+        if parId not in labels_Para:
+            labels_Para[parId] = {}
+        labels_Para_sub = labels_Para[parId] # labels_Para_sub: sub-dict of labels sorted by entities within a paragraph
+                                             # each sub-dict has step+1 entries
+        if participant not in labels_Para_sub:
+            labels_Para_sub[participant] = {statusId: labels}
         else:
-            dtPartLab[participant][statusId] = labels
-    return dtPar
+            labels_Para_sub[participant][statusId] = labels
+    return labels_Para
 
 #----------------------------------------------------------------------------------------------------------------
 
@@ -182,10 +187,10 @@ def findCreationStep(prediction_records):
     steps = sorted(prediction_records, key=lambda x: x.sid)
     #print("steps:", steps)
 
-    # first step
+    # First step. This line filters those entities that exist before the process already
     if steps[0].from_location != 'null':    # not created (exists before the process)
         return -1
-
+    # 
     for s in steps:
         if s.to_location != 'null':
             return s.sid
@@ -231,6 +236,7 @@ def findMoveSteps(prediction_records):
 #----------------------------------------------------------------------------------------------------------------
 
 # Q1: Is participant X created during the process?
+# total: sum(num_entity per paragraph) 所有段落中出现的实体数目总和
 def Q1(labels, predictions):
     tp = fp = tn = fn = 0.0
     for pid in labels:
@@ -251,6 +257,7 @@ def Q1(labels, predictions):
     return tp,fp,tn,fn
 
 # Q2: Participant X is created during the process. At which step is it created?
+# total: sum(created entities per paragraph in labels) label中created实体数目的总和
 def Q2(labels, predictions):
     tp = fp = tn = fn = 0.0
     # find all created participants and their creation step
@@ -264,6 +271,7 @@ def Q2(labels, predictions):
     return tp,fp,tn,fn
 
 # Q3: Participant X is created at step Y, and the initial location is known. Where is the participant after it is created?
+#
 def Q3(labels, predictions):
     tp = fp = tn = fn = 0.0
     # find all created participants and their creation step
@@ -279,6 +287,7 @@ def Q3(labels, predictions):
 #----------------------------------------------------------------------------------------------------------------
 
 # Q4: Is participant X destroyed during the process?
+# total: sum(num_entity per paragraph)
 def Q4(labels, predictions):
     tp = fp = tn = fn = 0.0
     for pid in labels:
@@ -299,6 +308,7 @@ def Q4(labels, predictions):
     return tp,fp,tn,fn
 
 # Q5: Participant X is destroyed during the process. At which step is it destroyed?
+# total: sum(destroyed entities per paragraph in labels)
 def Q5(labels, predictions):
     tp = fp = tn = fn = 0.0
     # find all destroyed participants and their destroy step
@@ -327,6 +337,7 @@ def Q6(labels, predictions):
 #----------------------------------------------------------------------------------------------------------------
 
 # Q7 Does participant X move during the process?
+# total: sum(num_entity per paragraph)
 def Q7(labels, predictions):
     tp = fp = tn = fn = 0.0
     for pid in labels:
@@ -350,6 +361,7 @@ def Q7(labels, predictions):
     return tp,fp,tn,fn
 
 # Q8 Participant X moves during the process.  At which steps does it move?
+# total: sum(moved entities per paragraph in labels)
 def Q8(labels, predictions):
     tp = fp = tn = fn = 0.0
     for pid in labels:
@@ -414,34 +426,46 @@ def Q10(labels, predictions):
 #----------------------------------------------------------------------------------------------------------------
 
 def main():
-    if len(sys.argv) != 4:
-        sys.stderr.write("Usage: evalQA.py para-ids gold-labels system-predictions\n")
-        sys.exit(-1)
-    paraIds = sys.argv[1]
-    goldPred = sys.argv[2]
-    fnPred = sys.argv[3]
-    qid_to_score = {}
+    #if len(sys.argv) != 4:
+        #sys.stderr.write("Usage: evalQA.py para-ids gold-labels system-predictions\n")
+        #sys.exit(-1)
+    paraIds_file = '../../tests/fixtures/eval/para_id.test.txt'#sys.argv[1]
+    goldPred_file = '../../tests/fixtures/eval/gold_labels.test.tsv'#sys.argv[2]
+    model_Pred_file = '../../data/naacl18/prolocal/output/prolocal.naacl_cr.data_run1.model_run2.test.tsv'#sys.argv[3]
+    accuracy_score = {}
+    precision_score, recall_score, F1_score = {}, {} ,{}
+    accuracy_dict, precision_dict, recall_dict, F1_dict = {}, {} ,{}, {}
 
-    selPid = set([int(x) for x in open(paraIds).readlines()])
-    gold_labels = readGold(goldPred)
-    labels = readLabels('tests/fixtures/eval/all-moves.full-grid.tsv', selPid, gold_labels)
-    predictions = readPredictions(fnPred)
+
+    set_Para_id = set([int(x) for x in open(paraIds_file).readlines()])
+    location_labels = readGold(goldPred_file)
+    full_labels = readLabels('../../tests/fixtures/eval/all-moves.full-grid.tsv', set_Para_id, location_labels)
+    predictions = readPredictions(model_Pred_file)
 
     blHeader = True
     qid = 0
     for Q in [Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9, Q10]:
         qid += 1
-        tp, fp, tn, fn = Q(labels, predictions)
+        tp, fp, tn, fn = Q(full_labels, predictions)
         header,results_str, results = metrics(tp,fp,tn,fn,qid)
         if blHeader:
             print("\t%s" % header)
             blHeader = False
         print("Q%d\t%s" % (qid, results_str))
-        qid_to_score[qid] = results[5]
+        accuracy_score[qid] = results[5]
+        precision_score[qid] = results[6]
+        recall_score[qid] = results[7]
+        F1_score[qid] = results[8]
 
-    cat1_score = (qid_to_score[1] + qid_to_score[4] + qid_to_score[7]) / 3
-    cat2_score = (qid_to_score[2] + qid_to_score[5] + qid_to_score[8]) / 3
-    cat3_score = (qid_to_score[3] + qid_to_score[6] + qid_to_score[9] + qid_to_score[10]) / 4
+    accuracy_dict = average(accuracy_score, accuracy_dict)
+    precision_dict = average(precision_score, precision_dict)
+    recall_dict = average(recall_score, recall_dict)
+    F1_dict = average(F1_score, F1_dict)
+
+    """
+    cat1_score = (accuracy_score[1] + accuracy_score[4] + accuracy_score[7]) / 3
+    cat2_score = (accuracy_score[2] + accuracy_score[5] + accuracy_score[8]) / 3
+    cat3_score = (accuracy_score[3] + accuracy_score[6] + accuracy_score[9] + accuracy_score[10]) / 4
 
     macro_avg = (cat1_score + cat2_score + cat3_score) / 3
     num_cat1_q = 750
@@ -449,14 +473,14 @@ def main():
     num_cat3_q = 823
     micro_avg = ((cat1_score * num_cat1_q) + (cat2_score * num_cat2_q) + (cat3_score * num_cat3_q)) / \
                 (num_cat1_q + num_cat2_q + num_cat3_q)
-
-    print("\n\nCategory\tAccuracy Score")
-    print("=========\t=====")
-    print(f"Cat-1\t\t{round(cat1_score,2)}")
-    print(f"Cat-2\t\t{round(cat2_score,2)}")
-    print(f"Cat-3\t\t{round(cat3_score,2)}")
-    print(f"macro-avg\t{round(macro_avg,2)}")
-    print(f"micro-avg\t{round(micro_avg,2)}")
+    """
+    print("\n\nCategory\tAccuracy\tPrecision\tRecall\tF1")
+    print("=========\t=====\t\t=====\t\t=====\t=====")
+    print(f"Cat-1\t\t{round(accuracy_dict['cat1_score'],2)}\t\t{round(precision_dict['cat1_score'],2)}\t\t{round(recall_dict['cat1_score'],2)}\t{round(F1_dict['cat1_score'],2)}")
+    print(f"Cat-2\t\t{round(accuracy_dict['cat2_score'],2)}\t\t{round(precision_dict['cat2_score'],2)}\t\t{round(recall_dict['cat2_score'],2)}\t{round(F1_dict['cat2_score'],2)}")
+    print(f"Cat-3\t\t{round(accuracy_dict['cat3_score'],2)}\t\t{round(precision_dict['cat3_score'],2)}\t\t{round(recall_dict['cat3_score'],2)}\t{round(F1_dict['cat3_score'],2)}")
+    print(f"macro-avg\t{round(accuracy_dict['macro_avg'],2)}\t\t{round(precision_dict['macro_avg'],2)}\t\t{round(recall_dict['macro_avg'],2)}\t{round(F1_dict['macro_avg'],2)}")
+    print(f"micro-avg\t{round(accuracy_dict['micro_avg'],2)}\t\t{round(precision_dict['micro_avg'],2)}\t\t{round(recall_dict['micro_avg'],2)}\t{round(F1_dict['micro_avg'],2)}")
 
 def metrics(tp, fp, tn, fn, qid):
     if (tp+fp > 0):
@@ -482,7 +506,22 @@ def metrics(tp, fp, tn, fn, qid):
     return (header, results_str, results)
 
 #----------------------------------------------------------------------------------------------------------------
+def average(score: dict, metric: dict):
+    cat1_score = (score[1] + score[4] + score[7]) / 3
+    cat2_score = (score[2] + score[5] + score[8]) / 3
+    cat3_score = (score[3] + score[6] + score[9] + score[10]) / 4
 
+    metric['cat1_score'] = cat1_score
+    metric['cat2_score'] = cat2_score
+    metric['cat3_score'] = cat3_score
+
+    metric['macro_avg'] = (cat1_score + cat2_score + cat3_score) / 3
+    num_cat1_q = 750
+    num_cat2_q = 601
+    num_cat3_q = 823
+    metric['micro_avg'] = ((cat1_score * num_cat1_q) + (cat2_score * num_cat2_q) + (cat3_score * num_cat3_q)) / \
+                (num_cat1_q + num_cat2_q + num_cat3_q)
+    return metric
 
 if __name__ == "__main__":
     main()

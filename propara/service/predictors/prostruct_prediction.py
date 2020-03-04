@@ -13,13 +13,13 @@ from propara.trainer_decoder.action_scorer import ActionScorerDummy
 @Predictor.register('prostruct_prediction')
 class ProStructPredictor(Predictor):
     """
-    Wrapper for the :class:`processes.models.ProStructModel` model.
+    Wrapper for the :class:`propara.models.ProStructModel` model.
     This is used at prediction time, including on the demo when invoking the following command:
     # demo command:
     python  -m allennlp.service.server_simple
             --archive-path /tmp/xtiny/model.tar.gz
             --predictor prostruct_prediction
-            --include-package processes
+            --include-package propara
             --static-dir demo/propara_demo
     """
 

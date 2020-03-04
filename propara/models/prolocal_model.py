@@ -46,7 +46,7 @@ class ProLocalModel(Model):
 
     Sample commandline
     ------------------
-    python propara/run.py train -s /output_folder experiment_config/state_change_local.json 
+    python propara/run_local.py train -s /output_folder experiment_config/state_change_local.json
     """
 
     def __init__(self, vocab: Vocabulary,

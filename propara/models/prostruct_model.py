@@ -19,7 +19,7 @@ from allennlp.training.metrics import F1Measure, CategoricalAccuracy, BooleanAcc
 from allennlp.modules.similarity_functions.bilinear import BilinearSimilarity
 from allennlp.training.metrics import SpanBasedF1Measure, SquadEmAndF1
 from allennlp.nn.util import sequence_cross_entropy_with_logits
-from allennlp.nn.beam_search import BeamSearch
+from allennlp.nn.decoding import BeamSearch
 from propara.commonsense.background_knowledge.kb3_lexical import KBLexical
 from propara.trainer_decoder.maximum_marginal_likelihood import MaximumMarginalLikelihood
 

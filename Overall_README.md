@@ -2,6 +2,8 @@
 * This code cannot be run on Windows platform due to its dependency on old allennlp==0.4.3 which requires pytorch==0.3.1.
 * Upgrade to newest allennlp==0.9.0 seems to be a huge work...0_0
 * _embedding.py_ inside allennlp lib is modified at line 233
+* If you want to train your own model, run bash sripts: _run_global.sh, run_struct.sh_
+* ProStruct model can only be trained on **batch_size=1**
 # EMNLP 2018 Update
 Data and code related to our recent [EMNLP'18 paper] (https://arxiv.org/abs/1808.10012) is released on 31st Oct 2018.
 

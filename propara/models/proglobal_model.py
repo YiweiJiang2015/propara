@@ -52,7 +52,7 @@ class ProGlobal(Model):
 
         Sample commandline
         ------------------
-        python propara/run.py train -s /output_folder experiment_config/ProGlobal.json
+        python propara/run_global.py train -s /output_folder experiment_config/ProGlobal.json
         """
 
         super(ProGlobal, self).__init__(vocab)
@@ -201,6 +201,7 @@ class ProGlobal(Model):
             encoded_paragraph = self._dropout(self._modeling_layer(embedding_paragraph_slice, para_lstm_mask_slice))
 
             # max-pooling output for three category classification
+            # (bsz, hidden_size * 2)
             category_input, category_input_indices = torch.max(encoded_paragraph, 1)
 
             modeling_dim = encoded_paragraph.size(-1) # 2 * hidden_size, used in span prediction
@@ -278,16 +279,17 @@ class ProGlobal(Model):
 
             # copy the predict logits for the index of the list
             category_predict_logits_after_tmp = category_predict_logits_after.unsqueeze(1)
-            category_predict_logits_after_list[:, index, :] = category_predict_logits_after_tmp.data
+            category_predict_logits_after_list[:, index, :] = category_predict_logits_after_tmp.data # 后面无用
 
             '''  Model the after_loc prediction  '''
             # after location start prediction: takes contextual embeddings and weighted sum vector as input
             # shape:  batchsize * hiddensize
-            prev_start = util.weighted_sum(category_input, tmp_start_probability)
+            # wrong?
+            prev_start = util.weighted_sum(category_input, tmp_start_probability) # start_prob: (bsz, para_size)
             tiled_prev_start = prev_start.unsqueeze(1).expand(batch_size, paragraph_size, modeling_dim)
             span_start_input_after = torch.cat((span_start_input, tiled_prev_start), dim=2)
             encoded_start_input_after = self._dropout(
-                self._span_start_encoder_after(span_start_input_after, para_lstm_mask_slice))
+                self._span_start_encoder_after(span_start_input_after, para_lstm_mask_slice)) # todo 此处的mask?
             span_start_input_after_cat = torch.cat([encoded_paragraph, encoded_start_input_after], dim=-1)
 
             # predict the after location start
@@ -303,15 +305,15 @@ class ProGlobal(Model):
             tiled_start_representation_after = span_start_representation_after.unsqueeze(1).expand(batch_size,
                                                                                                    paragraph_size,
                                                                                                    modeling_dim)
-            # shape: batchsize * paragraph_size * 2hiddensize
+            # shape: batchsize * paragraph_size * 2hiddensize=200
             span_end_representation_after = torch.cat([encoded_paragraph, tiled_start_representation_after], dim=-1)
-            # Tensor Shape: (batch_size, passage_length, encoding_dim)
+            # Tensor Shape: (batch_size, passage_length, encoding_dim=10)
             encoded_span_end_after = self._dropout(self._span_end_encoder_after(span_end_representation_after,
                                                                                 para_lstm_mask_slice))
             encoded_span_end_after = torch.cat([encoded_paragraph, encoded_span_end_after], dim=-1)
-            # Shape: (batch_size, passage_length, encoding_dim * 4 + span_end_encoding_dim)
+            # Shape: (batch_size, passage_length, 2hiddensize + span_end_encoding_dim = 210)
             span_end_logits_after = self._span_end_predictor_after(encoded_span_end_after).squeeze(-1)
-            span_end_probs_after = util.masked_softmax(span_end_logits_after, para_mask_slice)
+            #span_end_probs_after = util.masked_softmax(span_end_logits_after, para_mask_slice)
 
             # get the best span for after location prediction
             best_span_after, best_span_after_start, best_span_after_end, best_span_after_real = \

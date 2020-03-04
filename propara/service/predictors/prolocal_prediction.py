@@ -4,8 +4,8 @@ from typing import List
 from allennlp.common.util import JsonDict, sanitize
 from allennlp.data import Instance
 from allennlp.service.predictors.predictor import Predictor
-from propara.models.prolocal_model import ProLocalModel
-from propara.data.prolocal_dataset_reader import ProLocalDatasetReader
+#from propara.models.prolocal_model import ProLocalModel
+#from propara.data.prolocal_dataset_reader import ProLocalDatasetReader
 
 @Predictor.register('prolocal-prediction')
 class ProLocalPredictor(Predictor):
