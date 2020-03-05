@@ -4,7 +4,7 @@ from allennlp.data.fields import TextField, ListField, SequenceLabelField, Label
 from allennlp.data.tokenizers.token import Token
 import pytest
 
-from propara.data.propara_dataset_reader import ProParaDatasetReader, _find_span
+from propara.data.prostruct_dataset_reader import ProStructDatasetReader, _find_span
 
 FILENAME = "tests/fixtures/state_changes/grids.small.tsv"
 
@@ -32,7 +32,7 @@ class TestProParaDatasetReader(AllenNlpTestCase):
 
 
     def test_read_from_file(self):
-        reader = ProParaDatasetReader()
+        reader = ProStructDatasetReader()
 
         instances = list(reader.read(FILENAME))
 

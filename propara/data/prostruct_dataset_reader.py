@@ -1,5 +1,5 @@
-#from allennlp.common import tqdm
-#tqdm._tqdm.monitor_interval = 80
+from allennlp.common import tqdm
+tqdm._tqdm.monitor_interval = 80
 
 from typing import Dict, List, Tuple, Iterator
 import collections
@@ -103,8 +103,8 @@ def _compute_location_spans(states: List[Tokenized], sentences: List[Tokenized])
     return results
 
 
-@DatasetReader.register("ProParaDatasetReader")
-class ProParaDatasetReader(DatasetReader):
+@DatasetReader.register("ProStructReader")
+class ProStructDatasetReader(DatasetReader):
     """
     Reads a file from ProPara dataset. Each instance contains a paragraph, sentences and a list of participants.
     Labels consists of actions and state-values per participant per step.
@@ -159,7 +159,7 @@ class ProParaDatasetReader(DatasetReader):
         participants = next(group)[3:]  # first row contains participants
         prompt = next(group)[2]         # second row contains the prompt
 
-        # states[i][j] is the state of the i-th participant at time j
+        # states[i][j] is the state of the i-th participant at j-th time
         states = [[] for _ in participants]
 
         sentence_texts = []
@@ -238,8 +238,6 @@ class ProParaDatasetReader(DatasetReader):
 
                 yield instance
 
-
-
         else:
             # Single annotation, so just create one instance.
             instance = self.text_to_instance(para_id=group_id,
@@ -248,7 +246,7 @@ class ProParaDatasetReader(DatasetReader):
                                              states=states,
                                              filename=file_path)
 
-            yield instance
+            yield instance # contains entire paragraph and all entities
 
     @overrides
     def text_to_instance(self,
@@ -424,10 +422,10 @@ class ProParaDatasetReader(DatasetReader):
         return Instance(fields)
 
     @classmethod
-    def from_params(cls, params: Params) -> 'ProParaDatasetReader':
+    def from_params(cls, params: Params) -> 'ProStructDatasetReader':
         token_indexers = TokenIndexer.dict_from_params(params.pop("token_indexers", {}))
         multiple_annotations = params.pop_bool("multiple_annotations", False)
 
-        return ProParaDatasetReader(token_indexers=token_indexers, multiple_annotations=multiple_annotations)
+        return ProStructDatasetReader(token_indexers=token_indexers, multiple_annotations=multiple_annotations)
 
 

@@ -3,7 +3,7 @@ import os
 
 from allennlp.common.testing import ModelTestCase
 from flaky import flaky
-from propara.data.propara_dataset_reader import ProParaDatasetReader
+from propara.data.prostruct_dataset_reader import ProStructDatasetReader
 
 class ProStructModelTest(ModelTestCase):
     def setUp(self):

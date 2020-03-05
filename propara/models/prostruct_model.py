@@ -23,7 +23,7 @@ from allennlp.nn.decoding import BeamSearch
 from propara.commonsense.background_knowledge.kb3_lexical import KBLexical
 from propara.trainer_decoder.maximum_marginal_likelihood import MaximumMarginalLikelihood
 
-from propara.data.propara_dataset_reader import Action
+from propara.data.prostruct_dataset_reader import Action
 from propara.trainer_decoder.action_scorer import ActionScorerDummy, KBBasedActionScorer
 from propara.trainer_decoder.propara_trainer_decoder_helper import DecoderTrainerHelper
 from propara.trainer_decoder.propara_decoder_step import ProParaDecoderStep

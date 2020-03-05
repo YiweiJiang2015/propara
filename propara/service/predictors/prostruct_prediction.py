@@ -6,7 +6,7 @@ from allennlp.service.predictors.predictor import Predictor
 from overrides import overrides
 from allennlp.data.tokenizers.word_splitter import SpacyWordSplitter
 
-from propara.data.propara_dataset_reader import Action
+from propara.data.prostruct_dataset_reader import Action
 from propara.trainer_decoder.action_scorer import ActionScorerDummy
 
 
