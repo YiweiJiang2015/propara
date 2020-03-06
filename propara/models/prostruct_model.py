@@ -33,7 +33,7 @@ from propara.trainer_decoder.valid_action_generator import DummyConstrainedStepp
 @Model.register("ProStructModel")
 class ProStructModel(Model):
     """
-    This ``Model`` takes as input a dataset read by ProParaDatasetReader
+    This ``Model`` takes as input a dataset read by ProStructDatasetReader
     Input: paragraph, sentences, participants, verbs,
            labels: action-type, before_locations, after_locations
 
