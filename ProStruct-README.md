@@ -1,3 +1,7 @@
+#Fork notes
+* ProStruct cannot be run on debug mode...
+
+# Original notes
 Initialize the environment created as per the file README.md in the root directory.
 ```
     source activate propara

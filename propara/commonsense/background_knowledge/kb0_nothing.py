@@ -1,5 +1,5 @@
-from propara.commonsense import model_output_loader
-from propara.commonsense.background_knowledge.kb import KB
+from propara.propara.commonsense import model_output_loader
+from propara.propara.commonsense.background_knowledge.kb import KB
 
 
 class KB0Nothing(KB):

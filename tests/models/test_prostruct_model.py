@@ -3,7 +3,8 @@ import os
 
 from allennlp.common.testing import ModelTestCase
 from flaky import flaky
-from propara.data.prostruct_dataset_reader import ProStructDatasetReader
+from propara.propara.data.prostruct_dataset_reader import ProStructDatasetReader
+from propara.propara.models.prostruct_model import ProStructModel
 
 class ProStructModelTest(ModelTestCase):
     def setUp(self):
@@ -13,8 +14,8 @@ class ProStructModelTest(ModelTestCase):
         # 2. Elmo model files are too large for Git, so a local path
         #    must be setup in test config json.
         self.set_up_model(
-                'tests/fixtures/prostruct/prostruct_model_test.json',
-                'tests/fixtures/prostruct/toy_data_prostruct_model'
+                '../fixtures/prostruct/prostruct_model_test.json',
+                '../fixtures/prostruct/toy_data_prostruct_model'
         )
 
     def test_state_change_model_can_train_save_and_load(self):

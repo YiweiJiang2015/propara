@@ -6,7 +6,7 @@ import math
 import torch
 from overrides import overrides
 
-from propara.data.prostruct_dataset_reader import Action
+from propara.propara.data.prostruct_dataset_reader import Action
 
 ABLATE_HARD_CONSTRAINTS = False
 

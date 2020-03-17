@@ -6,9 +6,9 @@ import torch
 import torch.nn.functional as f
 from overrides import overrides
 
-from propara.commonsense.background_knowledge.kb import KB
-from propara.commonsense.background_knowledge.kb0_nothing import KB0Nothing
-from propara.data.prostruct_dataset_reader import Action
+from propara.propara.commonsense.background_knowledge.kb import KB
+from propara.propara.commonsense.background_knowledge.kb0_nothing import KB0Nothing
+from propara.propara.data.prostruct_dataset_reader import Action
 
 
 class ActionScorer(object):

@@ -6,8 +6,8 @@ from allennlp.service.predictors.predictor import Predictor
 from overrides import overrides
 from allennlp.data.tokenizers.word_splitter import SpacyWordSplitter
 
-from propara.data.prostruct_dataset_reader import Action
-from propara.trainer_decoder.action_scorer import ActionScorerDummy
+from propara.propara.data.prostruct_dataset_reader import Action
+from propara.propara.trainer_decoder.action_scorer import ActionScorerDummy
 
 
 @Predictor.register('prostruct_prediction')
@@ -43,7 +43,7 @@ class ProStructPredictor(Predictor):
         sentence_texts = sentence_texts if "\n" not in sentence_texts else [s for s in sentence_texts.split("\n")]
         participants = inputs["participants"]
         if not participants:
-            participants = [p for p in self.helper.participants_from_sentences(sentence_texts)]
+            participants = [p for p in self.helper.participants_from_sentences(sentence_texts)] # TODO where is this?
         # Participants can be separated in many different ways
         # (A participant can contain comma and in those cases we separate by "\n" or "\t").
         # Do this only when participants is not already a list (demo passes a string).
@@ -58,7 +58,7 @@ class ProStructPredictor(Predictor):
             participants = participants if "," not in participants else [p.strip() for p in participants.split(",")]
         states = inputs.get("states", None)
         # Can be used in demo (eventually the demo would control more parameters such as which commonsense etc).
-        top_k_sequences = inputs.get("top_k_sequences", 2)
+        top_k_sequences = inputs.get("top_k_sequences", 2) # todo not found in test dataset
         print(f"Predictor gets input: ", inputs)
         print(f"Predictor formats inputs =\n{para_id},\n{sentence_texts}\n{participants}")
 

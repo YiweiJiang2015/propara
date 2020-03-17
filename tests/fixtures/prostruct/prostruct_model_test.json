@@ -1,9 +1,9 @@
 {
-  "dataset_reader":{"type":"ProParaDatasetReader"},
+  "dataset_reader":{"type":"ProStructReader"},
 
-  "train_data_path": "./tests/fixtures/state_changes/grids.small.tsv",
-  "validation_data_path": "./tests/fixtures/state_changes/grids.small.tsv",
-  "test_data_path": "./tests/fixtures/state_changes/grids.small.tsv",
+  "train_data_path": "../fixtures/state_changes/grids.small.tsv",
+  "validation_data_path": "../fixtures/state_changes/grids.small.tsv",
+  "test_data_path": "../fixtures/state_changes/grids.small.tsv",
   "evaluate_on_test": true,
 
   "model": {
@@ -49,10 +49,10 @@
     "kb_configs": {
       "kb_coefficient": 0.5,
       "kb_to_use": "lexicalkb",
-      "lexical_kb_path": "tests/fixtures/decoder_data/kbs/kb3/lexical-kb-v0.tsv",
-      "partial_grids_path": "tests/fixtures/decoder_data/kbs/kb2/kb2-partialgrids.tsv",
-      "partialgrid_prompts_load_path": "tests/fixtures/decoder_data/kbs/kb2/partial-grids.tsv",
-      "fullgrid_prompts_load_path": "tests/fixtures/decoder_data/kbs/kb2/full-grids.tsv"
+      "lexical_kb_path": "../fixtures/decoder_data/kbs/kb3/lexical-kb-v0.tsv",
+      "partial_grids_path": "../fixtures/decoder_data/kbs/kb2/kb2-partialgrids.tsv",
+      "partialgrid_prompts_load_path": "../fixtures/decoder_data/kbs/kb2/partial-grids.tsv",
+      "fullgrid_prompts_load_path": "../fixtures/decoder_data/kbs/kb2/full-grids.tsv"
     }
   },
   "iterator": {

@@ -1,4 +1,4 @@
-from propara.trainer_decoder.propara_decoder_state import ProParaDecoderState
+from propara.propara.trainer_decoder.propara_decoder_state import ProParaDecoderState
 
 import torch
 

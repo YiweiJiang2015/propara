@@ -4,6 +4,7 @@
 * _embedding.py_ inside allennlp lib is modified at line 233
 * If you want to train your own model, run bash sripts: _run_global.sh, run_struct.sh_
 * ProStruct model can only be trained on **batch_size=1**
+* In terms of validation metric, only ProLocal model contains this part originally. I do think ProGlobal is a semi-finished model.
 # EMNLP 2018 Update
 Data and code related to our recent [EMNLP'18 paper] (https://arxiv.org/abs/1808.10012) is released on 31st Oct 2018.
 

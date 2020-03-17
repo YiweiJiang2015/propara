@@ -4,15 +4,15 @@ import logging
 import torch
 from allennlp.nn.decoding import DecoderStep
 
-from propara.trainer_decoder.propara_decoder_state import ProParaDecoderState
+from propara.propara.trainer_decoder.propara_decoder_state import ProParaDecoderState
 
 from collections import defaultdict
 from typing import List, Set, Dict
 
 from overrides import overrides
 
-from propara.trainer_decoder.action_scorer import ActionScorer
-from propara.trainer_decoder.valid_action_generator import ValidActionGenerator, DummyConstrainedStepper, \
+from propara.propara.trainer_decoder.action_scorer import ActionScorer
+from propara.propara.trainer_decoder.valid_action_generator import ValidActionGenerator, DummyConstrainedStepper, \
     CommonsenseBasedActionGenerator
 
 logger = logging.getLogger(__name__)

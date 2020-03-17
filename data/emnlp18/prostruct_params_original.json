@@ -13,7 +13,7 @@
       "tokens": {
         "type": "embedding",
         "embedding_dim": 100,
-        "pretrained_file": "./data/glove.6B.100d.txt",
+        "pretrained_file": "../data/glove.6B.100d.txt",
         "trainable": false
       }
     },
@@ -58,8 +58,8 @@
     "kb_configs": {
       "kb_coefficient": 0.5,
       "kb_to_use": "lexicalkb",
-      "lexical_kb_path": "tests/fixtures/decoder_data/kbs/kb3/lexical-kb-v0.tsv",
-      "fullgrid_prompts_load_path": "tests/fixtures/decoder_data/kbs/kb2/full-grids.tsv"
+      "lexical_kb_path": "../tests/fixtures/decoder_data/kbs/kb3/lexical-kb-v0.tsv",
+      "fullgrid_prompts_load_path": "../tests/fixtures/decoder_data/kbs/kb2/full-grids.tsv"
     }
   },
   "iterator": {

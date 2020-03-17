@@ -20,14 +20,14 @@ from allennlp.modules.similarity_functions.bilinear import BilinearSimilarity
 from allennlp.training.metrics import SpanBasedF1Measure, SquadEmAndF1
 from allennlp.nn.util import sequence_cross_entropy_with_logits
 from allennlp.nn.decoding import BeamSearch
-from propara.commonsense.background_knowledge.kb3_lexical import KBLexical
-from propara.trainer_decoder.maximum_marginal_likelihood import MaximumMarginalLikelihood
+from propara.propara.commonsense.background_knowledge.kb3_lexical import KBLexical
+from propara.propara.trainer_decoder.maximum_marginal_likelihood import MaximumMarginalLikelihood
 
-from propara.data.prostruct_dataset_reader import Action
-from propara.trainer_decoder.action_scorer import ActionScorerDummy, KBBasedActionScorer
-from propara.trainer_decoder.propara_trainer_decoder_helper import DecoderTrainerHelper
-from propara.trainer_decoder.propara_decoder_step import ProParaDecoderStep
-from propara.trainer_decoder.valid_action_generator import DummyConstrainedStepper, CommonsenseBasedActionGenerator
+from propara.propara.data.prostruct_dataset_reader import Action
+from propara.propara.trainer_decoder.action_scorer import ActionScorerDummy, KBBasedActionScorer
+from propara.propara.trainer_decoder.propara_trainer_decoder_helper import DecoderTrainerHelper
+from propara.propara.trainer_decoder.propara_decoder_step import ProParaDecoderStep
+from propara.propara.trainer_decoder.valid_action_generator import DummyConstrainedStepper, CommonsenseBasedActionGenerator
 
 
 @Model.register("ProStructModel")
@@ -120,7 +120,7 @@ class ProStructModel(Model):
 
         self._span_end_predictor_after = TimeDistributed(TimeDistributed(torch.nn.Linear(span_end_encoder_after.get_output_dim(), 1)))
 
-        self._type_accuracy = BooleanAccuracy()
+        self._type_accuracy = BooleanAccuracy() # Fixme WRONG. Categorical accuracy should be right!
         self._loss = torch.nn.CrossEntropyLoss(ignore_index=-1)  # Fixme: This is less robust. If the masking value
 
         # Fixme: add a metric for location span strings
@@ -612,10 +612,10 @@ class ProStructModel(Model):
 
         kb_configs = params.pop("kb_configs", {
             "kb_to_use": "lexicalkb",
-            "lexical_kb_path": "tests/fixtures/decoder_data/kbs/kb3/lexical-kb-v0.tsv",
-            "partial_grids_path": "tests/fixtures/decoder_data/kbs/kb2/kb2-partialgrids.tsv",
-            "partialgrid_prompts_load_path": "tests/fixtures/decoder_data/kbs/kb2/partial-grids.tsv",
-            "fullgrid_prompts_load_path": "tests/fixtures/decoder_data/kbs/kb2/full-grids.tsv"
+            "lexical_kb_path": "../tests/fixtures/decoder_data/kbs/kb3/lexical-kb-v0.tsv",
+            "partial_grids_path": "../tests/fixtures/decoder_data/kbs/kb2/kb2-partialgrids.tsv",
+            "partialgrid_prompts_load_path": "../tests/fixtures/decoder_data/kbs/kb2/partial-grids.tsv",
+            "fullgrid_prompts_load_path": "../tests/fixtures/decoder_data/kbs/kb2/full-grids.tsv"
         })
 
         # AllenNLP predictors requires no change in a serialized model

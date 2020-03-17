@@ -3,7 +3,9 @@ from unittest import TestCase
 
 from allennlp.models.archival import load_archive
 from allennlp.service.predictors import Predictor
-from propara.service.predictors.prostruct_prediction import ProStructPredictor
+from propara.propara.service.predictors.prostruct_prediction import ProStructPredictor
+from propara.propara.models.prostruct_model import ProStructModel
+from propara.propara.data.prostruct_dataset_reader import ProStructDatasetReader
 
 
 class TestProParaPredictor(TestCase):
@@ -31,7 +33,7 @@ class TestProParaPredictor(TestCase):
                       ["-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "underground"]]}
 
 
-        archive = load_archive('tests/fixtures/prostruct/prostruct_toy_model.tar.gz')
+        archive = load_archive('../tests/fixtures/prostruct/prostruct_toy_model.tar.gz')
         predictor = Predictor.from_archive(archive, 'prostruct_prediction')
         result = predictor.predict_json(inputs)
         assert(result['para_id'] == '4')

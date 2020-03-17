@@ -14,4 +14,4 @@ from propara.service.predictors.prostruct_prediction import ProStructPredictor
 
 
 if __name__ == "__main__":
-    main(prog="python -m allennlp.run")
+    main(prog="python -m allennlp.run") # meaning of m?
